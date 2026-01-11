@@ -1,30 +1,106 @@
-#!/bin/bash
-# khmatrix - Khmer Matrix Rain Effect
-# A Matrix-style terminal animation with Khmer characters
+#!/usr/bin/env python3
+"""
+khmatrix - Khmer Matrix Rain Effect
+Authentic falling rain animation like cmatrix
+"""
 
-KHMER_CHARS='កខគឃងចឆជឈញដឋឌឍណតថទធនបផពភមយរលវសហឡអឥឦឧឨឩឪឫឬឭឮ០១២៣៤៥៦៧៨៩។៕'
+import curses
+import random
+import time
+import argparse
 
-# Default speed
-SPEED=96
+KHMER_CHARS = "កខគឃងចឆជឈញដឋឌឍណតថទធនបផពភមយរលវសហឡអ០១២៣៤៥៦៧៨៩"
 
-# Parse arguments
-while getopts "s:h" opt; do
-  case $opt in
-    s) SPEED="$OPTARG" ;;
-    h)
-      echo "Usage: khmatrix [-s speed]"
-      echo "  -s  Speed 0-100 (default: 96)"
-      echo "  -h  Show this help"
-      exit 0
-      ;;
-  esac
-done
+class RainDrop:
+    def __init__(self, x, height):
+        self.x = x
+        self.y = random.randint(-20, 0)
+        self.speed = random.randint(1, 3)
+        self.length = random.randint(5, 15)
+        self.height = height
+        self.chars = [random.choice(KHMER_CHARS) for _ in range(self.length)]
 
-# Check if unimatrix is installed
-if ! command -v unimatrix &> /dev/null; then
-  echo "Error: unimatrix is not installed"
-  echo "Install with: pipx install git+https://github.com/will8211/unimatrix.git"
-  exit 1
-fi
+    def fall(self):
+        self.y += self.speed
+        # Randomly change some characters for flicker effect
+        if random.random() < 0.3:
+            idx = random.randint(0, self.length - 1)
+            self.chars[idx] = random.choice(KHMER_CHARS)
 
-unimatrix -s "$SPEED" -u "$KHMER_CHARS"
+    def reset(self):
+        self.y = random.randint(-20, -1)
+        self.speed = random.randint(1, 3)
+        self.length = random.randint(5, 15)
+        self.chars = [random.choice(KHMER_CHARS) for _ in range(self.length)]
+
+def main(stdscr, speed):
+    # Setup curses
+    curses.curs_set(0)
+    stdscr.nodelay(True)
+    curses.start_color()
+    curses.use_default_colors()
+
+    # Define colors
+    curses.init_pair(1, curses.COLOR_WHITE, -1)   # Head (bright)
+    curses.init_pair(2, curses.COLOR_GREEN, -1)   # Body
+    curses.init_pair(3, 22, -1) if curses.COLORS > 22 else curses.init_pair(3, curses.COLOR_GREEN, -1)  # Tail (dim)
+
+    height, width = stdscr.getmaxyx()
+
+    # Create rain drops - one for every 2 columns for Khmer char width
+    drops = []
+    for x in range(0, width - 1, 2):
+        drops.append(RainDrop(x, height))
+
+    delay = (100 - speed) / 1000.0
+
+    while True:
+        # Check for quit
+        try:
+            key = stdscr.getch()
+            if key in [ord('q'), ord(' '), 27]:  # q, space, or ESC
+                break
+        except:
+            pass
+
+        stdscr.erase()
+
+        for drop in drops:
+            drop.fall()
+
+            # Draw the drop
+            for i, char in enumerate(drop.chars):
+                y = drop.y - i
+                if 0 <= y < height - 1 and 0 <= drop.x < width - 1:
+                    try:
+                        if i == 0:
+                            # Head - bright white
+                            stdscr.addstr(y, drop.x, char, curses.color_pair(1) | curses.A_BOLD)
+                        elif i < 3:
+                            # Near head - bright green
+                            stdscr.addstr(y, drop.x, char, curses.color_pair(2) | curses.A_BOLD)
+                        elif i < drop.length - 3:
+                            # Body - normal green
+                            stdscr.addstr(y, drop.x, char, curses.color_pair(2))
+                        else:
+                            # Tail - dim
+                            stdscr.addstr(y, drop.x, char, curses.color_pair(3) | curses.A_DIM)
+                    except curses.error:
+                        pass
+
+            # Reset if off screen
+            if drop.y - drop.length > height:
+                drop.reset()
+
+        stdscr.refresh()
+        time.sleep(delay)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Khmer Matrix Rain")
+    parser.add_argument("-s", "--speed", type=int, default=85, help="Speed 0-100 (default: 85)")
+    args = parser.parse_args()
+
+    try:
+        curses.wrapper(lambda stdscr: main(stdscr, args.speed))
+    except KeyboardInterrupt:
+        pass
