@@ -1,0 +1,30 @@
+#!/bin/bash
+# khmatrix - Khmer Matrix Rain Effect
+# A Matrix-style terminal animation with Khmer characters
+
+KHMER_CHARS='កខគឃងចឆជឈញដឋឌឍណតថទធនបផពភមយរលវសហឡអឥឦឧឨឩឪឫឬឭឮ០១២៣៤៥៦៧៨៩។៕'
+
+# Default speed
+SPEED=96
+
+# Parse arguments
+while getopts "s:h" opt; do
+  case $opt in
+    s) SPEED="$OPTARG" ;;
+    h)
+      echo "Usage: khmatrix [-s speed]"
+      echo "  -s  Speed 0-100 (default: 96)"
+      echo "  -h  Show this help"
+      exit 0
+      ;;
+  esac
+done
+
+# Check if unimatrix is installed
+if ! command -v unimatrix &> /dev/null; then
+  echo "Error: unimatrix is not installed"
+  echo "Install with: pipx install git+https://github.com/will8211/unimatrix.git"
+  exit 1
+fi
+
+unimatrix -s "$SPEED" -u "$KHMER_CHARS"
