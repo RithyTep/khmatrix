@@ -5,25 +5,13 @@ set -e
 
 echo "Installing khmatrix..."
 
-# Check for pipx
-if ! command -v pipx &> /dev/null; then
-  echo "Installing pipx..."
-  if command -v brew &> /dev/null; then
-    brew install pipx
-  elif command -v apt &> /dev/null; then
-    sudo apt install -y pipx
-  else
-    echo "Please install pipx first: https://pipx.pypa.io/stable/installation/"
-    exit 1
-  fi
+# Check Python
+if ! command -v python3 &> /dev/null; then
+  echo "Error: Python 3 is required"
+  exit 1
 fi
 
-# Install unimatrix
-echo "Installing unimatrix..."
-pipx install git+https://github.com/will8211/unimatrix.git 2>/dev/null || true
-
 # Install khmatrix
-echo "Installing khmatrix..."
 INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$INSTALL_DIR"
 

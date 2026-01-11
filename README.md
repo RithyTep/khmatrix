@@ -1,30 +1,29 @@
 # khmatrix
 
-Matrix rain effect with Khmer characters for your terminal.
+Matrix rain effect with Khmer characters - just like cmatrix!
 
 ![Khmer Matrix](https://img.shields.io/badge/language-Khmer-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.6+-yellow)
 
-## Preview
+## Features
 
-```
-គ If you have Khmer font installed, you'll see this:
-ក   ខ     គ
-  ង   ច     ឆ   ជ
-១   ២   ៣     ៤
-  រ     ល   វ     ស
-```
+- Authentic falling rain animation like cmatrix
+- Khmer Unicode characters (ក ខ គ ង ច ...)
+- White leading character with green trail
+- Variable speed raindrops
+- Smooth performance
 
 ## Requirements
 
 - macOS / Linux
+- Python 3.6+
 - Terminal with UTF-8 support
 - Khmer font (Noto Sans Khmer recommended)
-- Python 3.6+
 
 ## Installation
 
-### Quick Install (macOS/Linux)
+### Quick Install
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/RithyTep/khmatrix/main/install.sh | bash
@@ -33,14 +32,10 @@ curl -sSL https://raw.githubusercontent.com/RithyTep/khmatrix/main/install.sh | 
 ### Manual Install
 
 ```bash
-# Install unimatrix
-pipx install git+https://github.com/will8211/unimatrix.git
-
-# Clone and install khmatrix
 git clone https://github.com/RithyTep/khmatrix.git
 cd khmatrix
 chmod +x khmatrix
-sudo cp khmatrix /usr/local/bin/
+cp khmatrix ~/.local/bin/
 ```
 
 ## Usage
@@ -53,7 +48,7 @@ khmatrix
 
 | Flag | Description |
 |------|-------------|
-| `-s` | Speed 0-100 (default: 96) |
+| `-s` | Speed 0-100 (default: 85) |
 | `-h` | Show help |
 
 ### Examples
@@ -62,37 +57,34 @@ khmatrix
 # Normal speed
 khmatrix
 
-# Slow and relaxing
+# Slow
 khmatrix -s 50
 
-# Maximum speed
-khmatrix -s 100
+# Fast
+khmatrix -s 95
 ```
 
-### Keyboard Controls
+### Controls
 
 | Key | Action |
 |-----|--------|
-| `q` or `Space` | Quit |
-| `+` or `→` | Speed up |
-| `-` or `←` | Slow down |
+| `q` | Quit |
+| `Space` | Quit |
+| `ESC` | Quit |
 
-## Font Recommendations
+## Font
 
-For best display, install a Khmer-supporting font:
+For best display, use a Khmer font:
 
-- **Noto Sans Khmer** - `brew install font-noto-sans-khmer`
-- **Khmer OS** - Available at [khmeros.info](http://khmeros.info)
+```bash
+# macOS
+brew install --cask font-noto-sans-khmer
+```
 
 ## License
 
-MIT License - See [LICENSE](LICENSE)
+MIT License
 
 ## Credits
 
-- Built on top of [unimatrix](https://github.com/will8211/unimatrix)
-- Inspired by [cmatrix](https://github.com/abishekvashok/cmatrix)
-
-## Contributing
-
-Contributions welcome! Feel free to open issues or pull requests.
+Inspired by [cmatrix](https://github.com/abishekvashok/cmatrix)
