@@ -14,51 +14,55 @@ KHMER_CHARS = "កខគឃងចឆជឈញដឋឌឍណតថទធនប�
 class RainDrop:
     def __init__(self, x, height):
         self.x = x
-        self.y = random.randint(-20, 0)
-        self.speed = random.randint(1, 3)
-        self.length = random.randint(5, 15)
+        self.y = random.randint(-height, 0)
+        self.speed = 1
+        self.length = random.randint(4, height // 2)
         self.height = height
         self.chars = [random.choice(KHMER_CHARS) for _ in range(self.length)]
+        self.tick = 0
+        self.update_rate = random.randint(1, 3)  # How many frames before moving
 
-    def fall(self):
-        self.y += self.speed
-        # Randomly change some characters for flicker effect
-        if random.random() < 0.3:
-            idx = random.randint(0, self.length - 1)
-            self.chars[idx] = random.choice(KHMER_CHARS)
+    def update(self):
+        self.tick += 1
+        if self.tick >= self.update_rate:
+            self.tick = 0
+            self.y += 1
+            # Randomly change head character
+            if random.random() < 0.5:
+                self.chars[0] = random.choice(KHMER_CHARS)
 
     def reset(self):
         self.y = random.randint(-20, -1)
-        self.speed = random.randint(1, 3)
-        self.length = random.randint(5, 15)
+        self.length = random.randint(4, self.height // 2)
         self.chars = [random.choice(KHMER_CHARS) for _ in range(self.length)]
+        self.update_rate = random.randint(1, 3)
 
 def main(stdscr, speed):
-    # Setup curses
     curses.curs_set(0)
     stdscr.nodelay(True)
     curses.start_color()
     curses.use_default_colors()
 
-    # Define colors
-    curses.init_pair(1, curses.COLOR_WHITE, -1)   # Head (bright)
-    curses.init_pair(2, curses.COLOR_GREEN, -1)   # Body
-    curses.init_pair(3, 22, -1) if curses.COLORS > 22 else curses.init_pair(3, curses.COLOR_GREEN, -1)  # Tail (dim)
+    # Colors like cmatrix
+    curses.init_pair(1, curses.COLOR_WHITE, -1)   # Head - bright white
+    curses.init_pair(2, curses.COLOR_GREEN, -1)   # Body - green
 
     height, width = stdscr.getmaxyx()
 
-    # Create rain drops - one for every 2 columns for Khmer char width
+    # Create drops with spacing for Khmer characters
     drops = []
     for x in range(0, width - 1, 2):
         drops.append(RainDrop(x, height))
+        # Stagger start positions
+        drops[-1].y = random.randint(-height, height)
 
-    delay = (100 - speed) / 1000.0
+    # Frame delay - slower like cmatrix
+    delay = 0.04 + (100 - speed) * 0.001
 
     while True:
-        # Check for quit
         try:
             key = stdscr.getch()
-            if key in [ord('q'), ord(' '), 27]:  # q, space, or ESC
+            if key in [ord('q'), ord(' '), 27]:
                 break
         except:
             pass
@@ -66,29 +70,27 @@ def main(stdscr, speed):
         stdscr.erase()
 
         for drop in drops:
-            drop.fall()
+            drop.update()
 
-            # Draw the drop
-            for i, char in enumerate(drop.chars):
+            # Draw each character in the trail
+            for i in range(drop.length):
                 y = drop.y - i
                 if 0 <= y < height - 1 and 0 <= drop.x < width - 1:
                     try:
+                        char = drop.chars[i]
                         if i == 0:
-                            # Head - bright white
+                            # Head - white bold
                             stdscr.addstr(y, drop.x, char, curses.color_pair(1) | curses.A_BOLD)
-                        elif i < 3:
+                        elif i < 4:
                             # Near head - bright green
                             stdscr.addstr(y, drop.x, char, curses.color_pair(2) | curses.A_BOLD)
-                        elif i < drop.length - 3:
-                            # Body - normal green
-                            stdscr.addstr(y, drop.x, char, curses.color_pair(2))
                         else:
-                            # Tail - dim
-                            stdscr.addstr(y, drop.x, char, curses.color_pair(3) | curses.A_DIM)
+                            # Tail - normal green
+                            stdscr.addstr(y, drop.x, char, curses.color_pair(2))
                     except curses.error:
                         pass
 
-            # Reset if off screen
+            # Reset when fully off screen
             if drop.y - drop.length > height:
                 drop.reset()
 
@@ -97,7 +99,7 @@ def main(stdscr, speed):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Khmer Matrix Rain")
-    parser.add_argument("-s", "--speed", type=int, default=85, help="Speed 0-100 (default: 85)")
+    parser.add_argument("-s", "--speed", type=int, default=50, help="Speed 0-100 (default: 50)")
     args = parser.parse_args()
 
     try:
