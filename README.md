@@ -27,7 +27,7 @@ Matrix rain effect with Khmer characters for your terminal.
 ### Quick Install (macOS/Linux)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/khmatrix/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/RithyTep/khmatrix/main/install.sh | bash
 ```
 
 ### Manual Install
@@ -37,7 +37,7 @@ curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/khmatrix/main/install.
 pipx install git+https://github.com/will8211/unimatrix.git
 
 # Clone and install khmatrix
-git clone https://github.com/YOUR_USERNAME/khmatrix.git
+git clone https://github.com/RithyTep/khmatrix.git
 cd khmatrix
 chmod +x khmatrix
 sudo cp khmatrix /usr/local/bin/

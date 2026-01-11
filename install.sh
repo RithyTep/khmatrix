@@ -27,7 +27,7 @@ echo "Installing khmatrix..."
 INSTALL_DIR="$HOME/.local/bin"
 mkdir -p "$INSTALL_DIR"
 
-curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/khmatrix/main/khmatrix -o "$INSTALL_DIR/khmatrix"
+curl -sSL https://raw.githubusercontent.com/RithyTep/khmatrix/main/khmatrix -o "$INSTALL_DIR/khmatrix"
 chmod +x "$INSTALL_DIR/khmatrix"
 
 # Add to PATH if needed
